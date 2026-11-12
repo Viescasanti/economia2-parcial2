@@ -10,7 +10,7 @@
 body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.5 Georgia,"Times New Roman",serif}
 header{position:sticky;top:0;z-index:5;background:var(--ink);color:var(--paper);padding:10px 16px}
 .top{max-width:760px;margin:0 auto;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-.top b{font-size:15px;margin-right:auto}
+.top b{font-size:15px}
 header button{font:600 13px system-ui,sans-serif;border:1px solid #666;background:transparent;color:var(--paper);border-radius:999px;padding:5px 12px;cursor:pointer}
 header button.on{background:var(--paper);color:var(--ink)}
 main{max-width:760px;margin:0 auto;padding:12px 16px 80px}
@@ -25,22 +25,51 @@ h2{font-size:20px;margin:34px 0 8px;padding-top:10px;border-top:3px solid var(--
 .tag.n{background:#f0dcc0;color:var(--brand)}
 .tag.c{background:#f2d3cd;color:var(--red)}
 .t{font-size:14px;color:var(--red);margin:4px 0 0 18px}
-body.quiz .a,body.quiz .t{display:none}
-body.quiz .q.open .a,body.quiz .q.open .t{display:block}
-body.quiz .q h3::after{content:"  ▸ ver";font:600 12px system-ui,sans-serif;color:var(--soft)}
-body.quiz .q.open h3::after{content:""}
+.modes{display:flex;gap:4px;margin-left:auto}
+.hidden{display:none!important}
+.qwrap{max-width:680px;margin:18px auto 0;padding:0 16px 80px}
+.qtop{display:flex;flex-wrap:wrap;gap:10px;align-items:center;font:600 13px system-ui,sans-serif;color:var(--soft);margin-bottom:12px}
+.qtop select{font:600 13px system-ui,sans-serif;background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:4px 6px;color:var(--ink)}
+.qtop .sp{margin-left:auto}
+.btn{font:600 14px system-ui,sans-serif;background:var(--ink);color:var(--paper);border:0;border-radius:8px;padding:9px 16px;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);padding:5px 12px;font-size:13px}
+.btn:disabled{opacity:.4;cursor:default}
+.qcard{background:#fffaf0;border:1px solid var(--line);border-left:4px solid var(--brand);border-radius:10px;padding:18px}
+.qgroup{font:700 12px system-ui,sans-serif;color:var(--brand);text-transform:uppercase;letter-spacing:.04em}
+.qq{font-size:19px;line-height:1.35;margin:6px 0 14px;font-weight:700}
+.opt{display:block;width:100%;text-align:left;font:15px/1.4 Georgia,serif;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin:0 0 8px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--ink)}
+.opt:disabled{cursor:default}
+.opt.correct{background:#dfe9d6;border-color:var(--green)}
+.opt.wrong{background:#f2d3cd;border-color:var(--red)}
+.fb{font:600 14px system-ui,sans-serif;margin:6px 0 10px}
+.fb.ok{color:var(--green)}.fb.no{color:var(--red)}
+.qactions{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+textarea{width:100%;min-height:120px;font:16px/1.45 Georgia,serif;background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:10px}
+.lbl{font:700 12px system-ui,sans-serif;color:var(--soft);text-transform:uppercase;display:block;margin:12px 0 4px}
+.yours{white-space:pre-wrap;color:var(--soft);margin:0}
+.rate{font:600 13px system-ui,sans-serif;background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:6px 14px;cursor:pointer;color:var(--ink)}
+.rate:hover{border-color:var(--ink)}
 </style>
 </head>
 <body>
 <header><div class="top">
   <b>Oral · Economía II · 12/11</b>
-  <button data-u="3">U3</button><button data-u="4">U4</button><button data-u="5">U5</button>
-  <button id="mode">Modo quiz</button>
+  <span id="unav"><button data-u="3">U3</button><button data-u="4">U4</button><button data-u="5">U5</button></span>
+  <span class="modes" id="modes"><button data-m="resumen" class="on">Resumen</button><button data-m="quiz">Quiz</button><button data-m="escribir">Escribir</button></span>
 </div></header>
 <main>
 <p class="intro">5 preguntas de 2 puntos · aprobás con 3 bien. Respuesta corta y después la desarrollás hablando. <span class="tag n">no está en tus apuntes</span> = estudiarla de acá. <span class="tag c">corrección</span> = tu apunte tenía un error.</p>
 <div id="list"></div>
 </main>
+<section id="v-quiz" class="hidden"><div class="qwrap">
+  <div class="qtop"><select id="q-u"><option value="0">Todas</option><option value="3">U3</option><option value="4">U4</option><option value="5">U5</option></select><span>Pregunta <b id="q-idx">1</b> / <span id="q-total">0</span></span><span>Aciertos <b id="q-score">0</b></span><button class="btn ghost sp" id="q-restart">Reiniciar</button></div>
+  <div class="qcard" id="q-card"></div>
+</div></section>
+<section id="v-escribir" class="hidden"><div class="qwrap">
+  <div class="qtop"><select id="e-u"><option value="0">Todas</option><option value="3">U3</option><option value="4">U4</option><option value="5">U5</option></select><span>Pregunta <b id="e-idx">1</b> / <span id="e-total">0</span></span><span>De memoria <b id="e-score">0</b></span><button class="btn ghost sp" id="e-restart">Reiniciar</button></div>
+  <div class="qcard" id="e-card"></div>
+</div></section>
 <script>
 // [unidad, nro, pregunta, [respuesta], trampa, marca: n = no está en tus apuntes, c = corrige tu apunte]
 const Q=[
@@ -108,8 +137,79 @@ Q.forEach(([u,n,q,a,t,m])=>{
   d.querySelector('h3').onclick=()=>d.classList.toggle('open');L.appendChild(d);
 });
 document.querySelectorAll('[data-u]').forEach(b=>b.onclick=()=>document.getElementById('u'+b.dataset.u).scrollIntoView({behavior:'smooth'}));
-const mb=document.getElementById('mode');
-mb.onclick=()=>{const on=document.body.classList.toggle('quiz');mb.classList.toggle('on',on);mb.textContent=on?'Ver todo':'Modo quiz';document.querySelectorAll('.q.open').forEach(x=>x.classList.remove('open'));};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const items=Q.map(([u,n,q,a,t])=>({u,id:u+'.'+n,q,a,t,txt:a.join(' · ')}));
+const pick=id=>{const v=+document.getElementById(id).value;return v?items.filter(x=>x.u===v):items;};
+
+/* ---- QUIZ: opción múltiple (distractores de la misma unidad) ---- */
+let quiz=[],qi=0,qs=0;
+function buildQuiz(){
+  quiz=shuffle(pick('q-u')).map(it=>({...it,options:shuffle([it,...shuffle(items.filter(x=>x.u===it.u&&x!==it)).slice(0,3)])}));
+  qi=0;qs=0;document.getElementById('q-total').textContent=quiz.length;renderQ();
+}
+function renderQ(){
+  document.getElementById('q-idx').textContent=qi+1;document.getElementById('q-score').textContent=qs;
+  const it=quiz[qi],c=document.getElementById('q-card');
+  c.innerHTML='<div class="qgroup">Pregunta '+it.id+'</div><div class="qq">'+it.q+'</div><div>'+it.options.map((o,i)=>'<button class="opt" data-i="'+i+'">'+o.txt+'</button>').join('')+'</div><div class="fb" id="fb"></div><div class="qactions"><button class="btn hidden" id="q-next"></button></div>';
+  const opts=c.querySelectorAll('.opt');
+  opts.forEach(b=>b.onclick=()=>{
+    const ok=it.options[+b.dataset.i].id===it.id;
+    opts.forEach(x=>{x.disabled=true;if(it.options[+x.dataset.i].id===it.id)x.classList.add('correct');});
+    const fb=document.getElementById('fb');
+    if(ok){qs++;fb.textContent='¡Correcto!';fb.className='fb ok';}
+    else{b.classList.add('wrong');fb.innerHTML='La correcta es la marcada en verde.'+(it.t?'<br>⚠ '+it.t:'');fb.className='fb no';}
+    document.getElementById('q-score').textContent=qs;
+    const n=document.getElementById('q-next');n.classList.remove('hidden');
+    n.textContent=qi+1<quiz.length?'Siguiente →':'Ver resultado';
+    n.onclick=()=>{qi+1<quiz.length?(qi++,renderQ()):resultQ();};
+  });
+}
+function resultQ(){
+  const pct=Math.round(qs/quiz.length*100);
+  document.getElementById('q-card').innerHTML='<div class="qgroup">Resultado</div><div class="qq">'+qs+'/'+quiz.length+' · '+pct+'%</div><p>'+(pct>=80?'Te lo sabés.':pct>=50?'Vas bien; repasá las que fallaste.':'Volvé al Resumen y reintentá.')+'</p><div class="qactions"><button class="btn" id="q-again">Reintentar</button></div>';
+  document.getElementById('q-again').onclick=buildQuiz;
+}
+
+/* ---- ESCRIBIR: de memoria, como en el oral ---- */
+let esc=[],ei=0,es=0;
+function buildEsc(){esc=shuffle(pick('e-u'));ei=0;es=0;document.getElementById('e-total').textContent=esc.length;renderE();}
+function renderE(){
+  document.getElementById('e-idx').textContent=ei+1;document.getElementById('e-score').textContent=es;
+  const it=esc[ei],c=document.getElementById('e-card');
+  c.innerHTML='<div class="qgroup">Pregunta '+it.id+'</div><div class="qq">'+it.q+'</div><textarea id="e-in" placeholder="Respondé como si hablaras… (Ctrl+Enter para revelar)" spellcheck="false"></textarea><div class="qactions"><button class="btn" id="e-rev">Revelar respuesta</button></div><div id="e-ans" class="hidden"></div>';
+  const ta=document.getElementById('e-in');ta.focus({preventScroll:true});
+  function reveal(){
+    if(ta.disabled)return;
+    const yours=(ta.value.trim()||'(no escribiste nada)').replace(/&/g,'&amp;').replace(/</g,'&lt;');
+    const ans=document.getElementById('e-ans');
+    ans.innerHTML='<span class="lbl">Lo que escribiste</span><p class="yours">'+yours+'</p><span class="lbl">La respuesta</span><ul class="a">'+it.a.map(x=>'<li>'+x+'</li>').join('')+'</ul>'+(it.t?'<p class="t">⚠ '+it.t+'</p>':'')+'<div class="qactions"><span class="lbl" style="margin:0">¿Te salió?</span><button class="rate" data-r="1">Sí</button><button class="rate" data-r="m">Más o menos</button><button class="rate" data-r="0">No</button></div>';
+    ans.classList.remove('hidden');document.getElementById('e-rev').disabled=true;ta.disabled=true;
+    ans.querySelectorAll('.rate').forEach(b=>b.onclick=()=>{if(b.dataset.r==='1')es++;ei+1<esc.length?(ei++,renderE()):resultE();});
+    ans.scrollIntoView({behavior:'smooth',block:'nearest'});
+  }
+  ta.onkeydown=e=>{if((e.ctrlKey||e.metaKey)&&e.key==='Enter')reveal();};
+  document.getElementById('e-rev').onclick=reveal;
+}
+function resultE(){
+  document.getElementById('e-idx').textContent=esc.length;document.getElementById('e-score').textContent=es;
+  document.getElementById('e-card').innerHTML='<div class="qgroup">Resultado</div><div class="qq">'+es+'/'+esc.length+' de memoria</div><div class="qactions"><button class="btn" id="e-again">Reintentar</button></div>';
+  document.getElementById('e-again').onclick=buildEsc;
+}
+document.getElementById('q-restart').onclick=buildQuiz;document.getElementById('q-u').onchange=buildQuiz;
+document.getElementById('e-restart').onclick=buildEsc;document.getElementById('e-u').onchange=buildEsc;
+
+/* ---- MODOS ---- */
+const V={resumen:document.querySelector('main'),quiz:document.getElementById('v-quiz'),escribir:document.getElementById('v-escribir')};
+const built={};
+document.querySelectorAll('#modes button').forEach(b=>b.onclick=()=>{
+  const m=b.dataset.m;
+  document.querySelectorAll('#modes button').forEach(x=>x.classList.toggle('on',x===b));
+  Object.entries(V).forEach(([k,v])=>v.classList.toggle('hidden',k!==m));
+  document.getElementById('unav').classList.toggle('hidden',m!=='resumen');
+  if(m==='quiz'&&!built.q){built.q=1;buildQuiz();}
+  if(m==='escribir'&&!built.e){built.e=1;buildEsc();}
+  window.scrollTo(0,0);
+});
 </script>
 </body>
 </html>
