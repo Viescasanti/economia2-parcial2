@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Oral Economía II</title>
+<style>
+:root{--paper:#f6f1e7;--paper-2:#ebe2cf;--ink:#22201c;--soft:#6b645a;--line:#d6cbb4;--brand:#8a5a1c;--red:#a63d2f;--green:#3d6b3a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.5 Georgia,"Times New Roman",serif}
+header{position:sticky;top:0;z-index:5;background:var(--ink);color:var(--paper);padding:10px 16px}
+.top{max-width:760px;margin:0 auto;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.top b{font-size:15px;margin-right:auto}
+header button{font:600 13px system-ui,sans-serif;border:1px solid #666;background:transparent;color:var(--paper);border-radius:999px;padding:5px 12px;cursor:pointer}
+header button.on{background:var(--paper);color:var(--ink)}
+main{max-width:760px;margin:0 auto;padding:12px 16px 80px}
+.intro{font-size:14px;color:var(--soft);margin:10px 0 4px}
+h2{font-size:20px;margin:34px 0 8px;padding-top:10px;border-top:3px solid var(--ink)}
+.q{border-bottom:1px solid var(--line);padding:12px 0}
+.q h3{margin:0;font-size:16px;line-height:1.35;cursor:pointer}
+.q h3 span{font:700 12px system-ui,sans-serif;color:var(--brand);margin-right:6px}
+.a{margin:6px 0 0;padding-left:18px;font-size:16px}
+.a li{margin:2px 0}
+.tag{display:inline-block;font:700 11px system-ui,sans-serif;border-radius:4px;padding:1px 6px;margin-left:6px;vertical-align:2px}
+.tag.n{background:#f0dcc0;color:var(--brand)}
+.tag.c{background:#f2d3cd;color:var(--red)}
+.t{font-size:14px;color:var(--red);margin:4px 0 0 18px}
+body.quiz .a,body.quiz .t{display:none}
+body.quiz .q.open .a,body.quiz .q.open .t{display:block}
+body.quiz .q h3::after{content:"  ▸ ver";font:600 12px system-ui,sans-serif;color:var(--soft)}
+body.quiz .q.open h3::after{content:""}
+</style>
+</head>
+<body>
+<header><div class="top">
+  <b>Oral · Economía II · 12/11</b>
+  <button data-u="3">U3</button><button data-u="4">U4</button><button data-u="5">U5</button>
+  <button id="mode">Modo quiz</button>
+</div></header>
+<main>
+<p class="intro">5 preguntas de 2 puntos · aprobás con 3 bien. Respuesta corta y después la desarrollás hablando. <span class="tag n">no está en tus apuntes</span> = estudiarla de acá. <span class="tag c">corrección</span> = tu apunte tenía un error.</p>
+<div id="list"></div>
+</main>
+<script>
+// [unidad, nro, pregunta, [respuesta], trampa, marca: n = no está en tus apuntes, c = corrige tu apunte]
+const Q=[
+[3,1,"Objetivos de la intervención del Estado",["Corregir fallas del <b>mercado</b> (monopolios, externalidades).","Crecimiento económico sostenible.","Asignar los recursos de manera óptima.","Distribución equitativa del ingreso.","Estabilidad económica (suavizar el ciclo, no eliminarlo)."],"En tu apunte dice \"fallas del Estado\": son fallas del mercado.","c"],
+[3,2,"¿Qué es la política económica?",["Conjunto de estrategias y medidas del gobierno para intervenir y dirigir la economía y lograr sus objetivos.","Se aplica con instrumentos de uso directo e indirecto."],"","n"],
+[3,3,"Instrumentos de uso directo",["Política fiscal (gasto e ingreso público).","Política monetaria (dinero, tasa de interés, tipo de cambio).","Leyes y normas.","Subsidios y aranceles."],"",""],
+[3,4,"Instrumentos de uso indirecto",["Política salarial (topes salariales).","Políticas sectoriales: agraria, industrial, comercial, petrolera."],"Leyes, subsidios y aranceles son directos, no indirectos.","n"],
+[3,5,"Política fiscal y equidad",["Estrategia del país para administrar los ingresos (impuestos) y los gastos públicos (salud, obra pública).","Objetivo: crecer de forma estable y cubrir necesidades básicas de forma <b>equitativa</b>.","Equidad ≠ igualdad: a cada uno lo que necesita."],"",""],
+[3,6,"Gasto público y su clasificación",["Erogaciones del Estado para cumplir sus fines.","Corrientes: para que el Estado funcione (sueldos, servicios esenciales, jubilaciones).","No corrientes (de capital): eventuales, crean capital (maquinaria, vehículos, obras)."],"",""],
+[3,7,"Gasto público y expansión económica",["↑G → ↑DA → ↑producción → ↑empleo.","En recesión se sube el gasto; en auge se baja.","Efecto multiplicador (Keynes)."],"Pasá siempre por la DA.","n"],
+[3,8,"Ingreso público y su clasificación",["Recursos para cubrir el gasto público.","Impuestos (tributos o gravámenes): directos (Ganancias) e indirectos (IVA).","Empresas del Estado (YPF, Aerolíneas).","Financiamiento: deuda (bonos)."],"",""],
+[3,9,"Efecto económico de los impuestos",["↑impuestos → ↓ingreso disponible → ↓consumo y ahorro → ↓DA.","↓impuestos → efecto contrario.","Afectan consumo, producción, empleo y ahorro."],"Ella quiere la cadena causa → efecto, no una lista.","n"],
+[3,10,"Política fiscal expansiva y contractiva",["Expansiva: ↑gasto y/o ↓impuestos → ↑DA. Se usa en recesión.","Contractiva: ↓gasto y/o ↑impuestos → ↓DA. Se usa en auge o con inflación.","Base: modelo keynesiano."],"",""],
+[3,11,"Política monetaria y su objetivo",["Herramienta del BCRA para regular la cantidad de dinero y la tasa de interés.","Objetivo: estabilidad, controlar la inflación y fomentar el crecimiento."],"","n"],
+[3,12,"Instrumentos de la política monetaria",["Tasa de interés de referencia.","Encaje bancario: % de los depósitos que los bancos guardan en reserva.","Operaciones de mercado abierto: compraventa de bonos."],"Te faltaba la tasa de interés.","c"],
+[3,13,"El dinero y sus funciones",["Medio circulante aceptado a cambio de bienes.","Instrumento de cambio.","Unidad de <b>cuenta</b>.","Depósito de valor.","Instrumento de liberación de deudas."],"En tu apunte dice \"unidad de cambio\": es unidad de cuenta.","c"],
+[3,14,"Demanda monetaria y de qué depende",["Dinero que las personas desean tener en efectivo y depósitos en vez de invertirlo.","Depende de: renta (↑ → ↑DM), tasa de interés (↑ → ↓DM) y precios (↑ → ↑DM)."],"Demanda monetaria ≠ demanda agregada.","c"],
+[3,15,"Oferta monetaria y quién la determina",["Dinero circulante en la economía: efectivo + depósitos bancarios.","La determina el BCRA → curva vertical."],"",""],
+[3,16,"Instrumentos del BCRA para expandir o contraer la OM",["Expandir: comprar bonos, bajar la tasa, bajar el encaje.","Contraer: vender bonos, subir la tasa, subir el encaje."],"Comprar bonos = expansiva (el BCRA entrega plata). \"Pregunta segura\".","n"],
+[3,17,"¿Por qué a más OM le debe corresponder más producción?",["Más dinero sin más producción → más demanda con la misma oferta → suben los precios (inflación).","Al revés: poco dinero → no se compra lo producido → desempleo."],"","n"],
+[3,18,"Agregados monetarios",["Clasificación del dinero según su liquidez; miden la liquidez del país.","M1 = efectivo + depósitos a la vista.","M2 = M1 + plazo fijo hasta 2 años + caja de ahorro.","M3 = M2 + plazo fijo de más de 2 años + instrumentos financieros.","M4 = M3 + depósitos en dólares convertidos a pesos."],"",""],
+[3,19,"Base monetaria, multiplicador y OM",["BM: efectivo del público + reservas de los bancos. Es la base de la OM.","m: cuánto crece la OM por cada peso de BM. m = (1 + c) / (r + c).","OM = m · BM."],"La BM no es \"el dinero en circulación\": es efectivo + reservas.","c"],
+[3,20,"Equilibrio en el mercado de dinero",["Equilibrio donde DM = OM → fija la tasa de interés.","DM: pendiente negativa. OM: vertical (la fija el BCRA).","↑OM → baja la tasa → más C e I (riesgo de inflación). ↓OM → sube la tasa."],"",""],
+[4,1,"Crecimiento económico",["Aumento sostenido de la producción de bienes y servicios en un período.","Se mide con el PIB <b>real</b> (y per cápita = PIB / población)."],"",""],
+[4,2,"Factores clave del crecimiento",["Capital (acumulación): infraestructura, maquinaria y capital humano.","Tierra: agricultura, minería, recursos.","Tecnología: innovación, avances productivos."],"No confundir con la 4.3.",""],
+[4,3,"Tres requisitos del crecimiento persistente",["Ahorro e inversión en capital nuevo.","Inversión en capital humano.","Descubrimiento de nuevas tecnologías."],"",""],
+[4,4,"Desarrollo económico",["Crecimiento + mejora de la calidad de vida de los habitantes.","Desarrollo = crecimiento + distribución del ingreso."],"Crecimiento es cantidad; desarrollo es calidad de vida.",""],
+[4,5,"Distribución del ingreso y desarrollo",["Sin buena distribución no hay desarrollo, aunque haya crecimiento.","Si el crecimiento queda en pocos, se frena."],"","n"],
+[4,6,"Formas de redistribuir el ingreso",["Impuesto a la renta progresivo (Ganancias).","Programas de sostenimiento del ingreso (planes, AUH).","Servicios subsidiados (educación, salud)."],"",""],
+[4,7,"Subdesarrollo y sus características",["Situación de un territorio con carencias de riqueza, capacidades, oportunidades y servicios.","Exportan primarios, bajo ingreso per cápita, analfabetismo, salud precaria, alta desigualdad, poca industria y tecnología."],"",""],
+[4,8,"Estructura primaria",["La población trabaja sobre todo en el sector primario (agro, minería).","El terciario ocupa más que el secundario → poca industria."],"","n"],
+[4,9,"Estructura dual",["Conviven dos sectores que no se conectan.","Precapitalista: autoconsumo, trueque, artesanías.","Capitalista: extranjero (exporta, se lleva las utilidades) y autóctono (comercio y especulación)."],"","n"],
+[4,10,"Funcionamiento inestable",["Producción: depende del clima.","Términos de intercambio: venden primarios baratos y compran manufacturas caras.","Exportaciones: volúmenes que fluctúan."],"","n"],
+[4,11,"Funcionamiento dependiente",["De empresas extranjeras que explotan los recursos (litio).","De importaciones de manufacturas.","De capital: no hay ahorro interno → deuda externa."],"","n"],
+[4,12,"Círculo vicioso de la pobreza",["Bajos ingresos → poco ahorro → poca inversión → baja productividad → bajos ingresos.","Se repite si no interviene el Estado o un impulso externo."],"",""],
+[4,13,"Cómo se mide el desarrollo",["PIB per cápita (no alcanza solo).","Ingreso per cápita ajustado por poder adquisitivo.","IDH: salud, educación e ingresos.","Índice de Gini: desigualdad.","% bajo la línea de pobreza."],"",""],
+[5,1,"Comercio internacional y ventaja comparativa",["Intercambio de bienes y servicios entre países, más allá de sus fronteras.","Ventaja comparativa: cada país se especializa en lo que produce con mayor eficiencia (menor costo relativo)."],"",""],
+[5,2,"Beneficios del comercio internacional",["Impulsa el crecimiento económico.","Acceso a bienes de mejor calidad → impulsa el desarrollo.","Ningún país produce todo lo que necesita."],"",""],
+[5,3,"Política comercial",["Estrategias, normas y medidas para incentivar o limitar exportaciones e importaciones.","Incluye las leyes de X y M; las reglas varían según el socio comercial."],"",""],
+[5,4,"¿Por qué influye en el crecimiento?",["Porque las exportaciones netas forman parte del PIB: PIB = C + I + G + (X − M).","X > M → el PIB crece."],"Te quedó en blanco: arrancá por la fórmula.","n"],
+[5,5,"Herramientas de apertura",["Bajar aranceles.","Acuerdos de libre comercio.","Unión aduanera (arancel externo común)."],"","n"],
+[5,6,"Restrictiva arancelaria",["Arancel: impuesto a lo importado; encarece y protege lo nacional.","Ad valorem (% del valor), específico (por cantidad), mixto."],"",""],
+[5,7,"Restrictiva no arancelaria",["Cuotas a la importación (límite de cantidad).","Medidas fitosanitarias (certificaciones, SENASA).","Subsidios a productores locales."],"",""],
+[5,8,"Proteccionismo",["Política intervencionista: el Estado protege a los productores nacionales de la competencia extranjera.","Ej.: aranceles, cuotas, prohibir importaciones, subsidios."],"",""],
+[5,9,"Bloques comerciales y niveles de integración",["Acuerdos entre países para eliminar barreras entre ellos (no con terceros).","1. Libre comercio · 2. Unión aduanera (arancel común) · 3. Mercado común (circulan trabajo y capital) · 4. Unión económica (políticas y moneda común) · 5. Unión plena."],"","n"],
+[5,10,"MERCOSUR y TLCAN",["MERCOSUR: Argentina, Brasil, Paraguay y Uruguay; Tratado de Asunción, 1991. Unión aduanera.","TLCAN: Canadá, EE. UU. y México. Libre comercio, sin poder político (hoy T-MEC)."],"","n"],
+[5,11,"Unión Europea y Cuenca del Pacífico",["UE: 27 países, libre circulación de personas, bienes, servicios y capitales; euro.","Cuenca del Pacífico: países de la costa del Pacífico; APEC (foro, sin tratado formal)."],"","n"],
+[5,12,"Economías emergentes",["Países en transición de una economía agrícola a una industrial y de servicios.","Crecen más que el promedio mundial. Ej.: Brasil, India, China."],"","n"],
+[5,13,"Balanza de pagos y sus cuentas",["BP: registro contable de las transacciones de un país con el resto del mundo en un período.","Cuentas: sus componentes; registran los flujos como ingresos y egresos."],"",""],
+[5,14,"Estructura de la BP",["BP = CC + CK + CF + errores y omisiones."],"",""],
+[5,15,"Cuenta corriente: cuentas y contabilización",["Balanza comercial (X − M de bienes), de servicios, de rentas primarias (intereses, dividendos) y de rentas secundarias (donaciones, sin contraprestación).","Dos columnas: Ingresos (entra dinero) y Pagos (sale dinero). Ingresos > Pagos = superávit."],"Usá Ingresos / Pagos como la cátedra; no Debe / Haber (en tu apunte lo pusiste al revés entre la CC y la CK).","c"],
+[5,16,"Cuenta capital: composición y contabilización",["Transferencias de capital para invertir en otro país.","Activos inmateriales (patentes, marcas) y no producidos (terrenos).","Igual que la CC: Ingresos y Pagos."],"",""],
+[5,17,"Cuenta financiera: cuentas y contabilización",["Refleja si el país presta al resto del mundo o le prestan.","Inversión directa (en empresas, largo plazo) · en cartera (acciones y bonos) · otras inversiones (préstamos) · derivados (futuros, opciones) · reservas.","Columnas: activo financiero (Argentina adquiere un derecho afuera) y pasivo financiero (el extranjero invierte o presta acá)."],"Comprar acciones es inversión en cartera, no directa. Truco: \"¿qué adquiere Argentina?\".","c"],
+[5,18,"Reservas de divisas",["Moneda extranjera en poder del país (BCRA).","Su variación va en la cuenta financiera.","Partida doble: entran divisas → +, salen divisas → −."],"","n"],
+[5,19,"Saldo CC + CK (\"+ CF\" en el banco)",["Positivo: capacidad de financiación (le prestamos al mundo o acumulamos divisas).","Negativo: necesidad de financiación (nos prestan o perdemos divisas)."],"El material lo analiza como CC + CK; por la identidad coincide con el saldo de la CF.","n"],
+[5,20,"Saldo de la variación de reservas",["Positivo: el país ganó divisas (suben las reservas).","Negativo: perdió divisas (bajan las reservas)."],"Negativo no es \"no hay divisas\": es que bajaron.","n"],
+[5,21,"Ejemplos de cada subcuenta",["Comercial: exportamos soja · Servicios: turismo · Rentas primarias: dividendos · Rentas secundarias: donaciones o remesas.","Capital: compra de una patente o un terreno.","Financiera: empresa argentina en EE. UU. (directa), acciones de Apple (cartera), préstamo a un banco español (otras)."],"Siempre decí el porqué, posicionado en Argentina.","n"]
+];
+const L=document.getElementById('list');let cur=0;
+Q.forEach(([u,n,q,a,t,m])=>{
+  if(u!==cur){cur=u;const h=document.createElement('h2');h.id='u'+u;h.textContent={3:'Unidad 3 · Política macroeconómica',4:'Unidad 4 · Desarrollo y crecimiento',5:'Unidad 5 · Comercio internacional y balanza de pagos'}[u];L.appendChild(h);}
+  const d=document.createElement('div');d.className='q';
+  d.innerHTML='<h3><span>'+u+'.'+n+'</span>'+q+(m==='n'?'<i class="tag n">no está en tus apuntes</i>':m==='c'?'<i class="tag c">corrección</i>':'')+'</h3><ul class="a">'+a.map(x=>'<li>'+x+'</li>').join('')+'</ul>'+(t?'<p class="t">⚠ '+t+'</p>':'');
+  d.querySelector('h3').onclick=()=>d.classList.toggle('open');L.appendChild(d);
+});
+document.querySelectorAll('[data-u]').forEach(b=>b.onclick=()=>document.getElementById('u'+b.dataset.u).scrollIntoView({behavior:'smooth'}));
+const mb=document.getElementById('mode');
+mb.onclick=()=>{const on=document.body.classList.toggle('quiz');mb.classList.toggle('on',on);mb.textContent=on?'Ver todo':'Modo quiz';document.querySelectorAll('.q.open').forEach(x=>x.classList.remove('open'));};
+</script>
+</body>
+</html>
